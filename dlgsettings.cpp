@@ -4,6 +4,8 @@
 #include "mainwindow.h"
 #include <QMessageBox>
 #include "global_vars.h"
+#include <QNetworkInterface>
+#include <QProcessEnvironment>
 
 DlgSettings::DlgSettings(QWidget *parent)
     : QDialog(parent)
@@ -17,12 +19,24 @@ DlgSettings::DlgSettings(QWidget *parent)
     QString strName = settings.value(REG_KEY_USERNAME).toString();
 
     if(strIp == "") {
-        strIp = MainWindow::getInstance()->getIpAddress();
+        QList<QNetworkInterface> interfaces = QNetworkInterface::allInterfaces();
+        for (const QNetworkInterface &interface : interfaces) {
+            if (interface.flags() & QNetworkInterface::IsUp && !(interface.flags() & QNetworkInterface::IsLoopBack)) {
+                QList<QNetworkAddressEntry> entries = interface.addressEntries();
+                for (const QNetworkAddressEntry &entry : entries) {
+                    if (entry.ip().toIPv4Address()) {
+                        strIp = entry.ip().toString();
+                        break;
+                    }
+                }
+            }
+        }
         settings.setValue(REG_KEY_IPADDRESS, strIp);
     }
 
     if(strName == "") {
-        strName = MainWindow::getInstance()->getUsername();
+        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+        strName = env.value("USERNAME", "Unknown User");
         settings.setValue(REG_KEY_USERNAME, strName);
     }
 

@@ -34,6 +34,8 @@ public slots:
     void slt_close();
     void slt_openSettings();
     void slt_readyRead();
+    void slt_socketError(QAbstractSocket::SocketError socketError);
+    void slt_disconnected();
 
     void on_lblLogo_clicked();
 

@@ -80,6 +80,17 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 }
 
+void MainWindow::slt_socketError(QAbstractSocket::SocketError socketError)
+{
+    slt_disconnected();
+}
+
+void MainWindow::slt_disconnected()
+{
+    QMessageBox::critical(this, APP_NAME, tr("Disconnected from server"));
+    exit(EXIT_SUCCESS);
+}
+
 void MainWindow::moveToBottomRight()
 {
     QScreen *screen = QApplication::primaryScreen();
@@ -121,7 +132,9 @@ void MainWindow::initSocket()
     QString strName = settings.value(REG_KEY_USERNAME).toString();
 
     m_pSocket = new QTcpSocket(this);
-    bool b = connect(m_pSocket, SIGNAL(readyRead()), this, SLOT(slt_readyRead()));
+    connect(m_pSocket, SIGNAL(readyRead()), this, SLOT(slt_readyRead()));
+    connect(m_pSocket, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(slt_socketError(QAbstractSocket::SocketError)));
+    connect(m_pSocket, SIGNAL(disconnected()), this, SLOT(slt_disconnected()));
 
     m_pSocket->connectToHost(strIp, 3022);
 
@@ -180,15 +193,17 @@ void MainWindow::slt_readyRead()
     in.startTransaction();
 
     int nHeader;
-    in >> nHeader;
+    QString strIp;
+    QString strName;
+
+    in >> nHeader;    
+    in >> strIp;
+    in >> strName;
+
+    in.commitTransaction();
 
     if(nHeader == RequestHeader::RH_SEND_ALERT)
     {
-        QString strIp;
-        QString strName;
-
-        in >> strIp;
-        in >> strName;
 
         DlgAlert *pDialog = new DlgAlert(strIp, strName, this);
         pDialog->showFullScreen();
@@ -196,20 +211,18 @@ void MainWindow::slt_readyRead()
 
     if(nHeader == RequestHeader::RH_RECEIVED_ALERT)
     {
-        QString strIp;
-        QString strName;
-
-        in >> strIp;
-        in >> strName;
-
         if(m_bStatus) {
-            QMessageBox::information(this, APP_NAME, tr("Received: %1(%2)").arg(strName).arg(strIp));
+            QMessageBox *msgBox = new QMessageBox();
+            msgBox->setWindowTitle(APP_NAME);
+            msgBox->setText(tr("Received: %1(%2)").arg(strName).arg(strIp));
+            msgBox->setStandardButtons(QMessageBox::Ok);
+            msgBox->setWindowFlags(msgBox->windowFlags() | Qt::WindowStaysOnTopHint);
+            msgBox->setModal(false);
+            msgBox->show();
         }
         m_bStatus = false;
         ui->centralwidget->setStyleSheet("QLabel#lblLogo { border-image: url(:/Resource/assets/logo.png); }");
     }
-
-    in.commitTransaction();
 }
 
 void MainWindow::on_lblLogo_clicked()

@@ -32,6 +32,7 @@ private:
     QSoundEffect *sound;
     QString m_strIp;
     QString m_strName;
+    bool m_bSendBack;
 };
 
 #endif // DLGALERT_H

@@ -1,6 +1,7 @@
 #include "dlgalert.h"
 #include "ui_dlgalert.h"
 #include "mainwindow.h"
+#include <QTimer>
 
 DlgAlert::DlgAlert(QString strIp, QString strName, QWidget *parent)
     : QDialog(parent)
@@ -8,6 +9,7 @@ DlgAlert::DlgAlert(QString strIp, QString strName, QWidget *parent)
 {
     ui->setupUi(this);
 
+    m_bSendBack = false;
     ui->lblUser->setText(strName);
     m_strIp = strIp;
     m_strName = strName;
@@ -41,13 +43,19 @@ void DlgAlert::on_btnAcknowledge_clicked()
 
 void DlgAlert::on_btnSend_clicked()
 {
-    MainWindow::getInstance()->on_lblLogo_clicked();
+    m_bSendBack = true;
     close();
 }
 
 void DlgAlert::closeEvent(QCloseEvent *e)
 {
     MainWindow::getInstance()->receivedAlert(m_strIp, m_strName);
+
+    if(m_bSendBack) {
+        QTimer::singleShot(500, [](){
+            MainWindow::getInstance()->on_lblLogo_clicked();
+        });
+    }
 
     sound->stop();
     sound = nullptr;
