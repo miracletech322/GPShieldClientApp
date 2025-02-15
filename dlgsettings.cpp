@@ -17,6 +17,7 @@ DlgSettings::DlgSettings(QWidget *parent)
 
     QString strIp = settings.value(REG_KEY_IPADDRESS).toString();
     QString strName = settings.value(REG_KEY_USERNAME).toString();
+    QString strDepart = settings.value(REG_KEY_DEPART).toString();
 
     if(strIp == "") {
         QList<QNetworkInterface> interfaces = QNetworkInterface::allInterfaces();
@@ -38,6 +39,10 @@ DlgSettings::DlgSettings(QWidget *parent)
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
         strName = env.value("USERNAME", "Unknown User");
         settings.setValue(REG_KEY_USERNAME, strName);
+    }
+
+    if(strDepart == "") {
+        ui->edtDepart->setText(strDepart);
     }
 
     ui->edtServerIp->setText(strIp);
@@ -63,9 +68,16 @@ void DlgSettings::on_btnSave_clicked()
         return;
     }
 
+    QString strDepart = ui->edtDepart->text();
+    if(strDepart == "") {
+        QMessageBox::warning(this, APP_NAME, "Please input valid department");
+        return;
+    }
+
     QSettings settings(APP_REG_COMPANY, APP_REG_NAME);
     settings.setValue(REG_KEY_IPADDRESS, strIp);
     settings.setValue(REG_KEY_USERNAME, strName);
+    settings.setValue(REG_KEY_DEPART, strDepart);
     accept();
 }
 

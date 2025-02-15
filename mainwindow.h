@@ -28,7 +28,7 @@ public:
     QString getUsername();
     QString getIpAddress();
     void initSocket();
-    void receivedAlert(QString strIp, QString strName);
+    void receivedAlert(QString strIp, QString strDepart, QString strName);
 
 public slots:
     void slt_close();

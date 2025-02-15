@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>323</width>
-    <height>128</height>
+    <width>326</width>
+    <height>164</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -50,6 +50,19 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QLabel" name="lblUser_2">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Department:</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item>
@@ -66,6 +79,16 @@
          </item>
          <item>
           <widget class="QLineEdit" name="edtUser">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>30</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="edtDepart">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -128,6 +151,7 @@
  <tabstops>
   <tabstop>edtServerIp</tabstop>
   <tabstop>edtUser</tabstop>
+  <tabstop>edtDepart</tabstop>
   <tabstop>btnSave</tabstop>
   <tabstop>btnClose</tabstop>
  </tabstops>

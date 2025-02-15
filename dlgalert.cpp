@@ -3,16 +3,17 @@
 #include "mainwindow.h"
 #include <QTimer>
 
-DlgAlert::DlgAlert(QString strIp, QString strName, QWidget *parent)
+DlgAlert::DlgAlert(QString strIp, QString strDepart, QString strName, QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::DlgAlert)
 {
     ui->setupUi(this);
 
     m_bSendBack = false;
-    ui->lblUser->setText(strName);
+    ui->lblUser->setText(strDepart + "/" + strName);
     m_strIp = strIp;
     m_strName = strName;
+    m_strDepart = strDepart;
 
     QScreen *screen = QApplication::primaryScreen();
     if (screen)
@@ -49,7 +50,7 @@ void DlgAlert::on_btnSend_clicked()
 
 void DlgAlert::closeEvent(QCloseEvent *e)
 {
-    MainWindow::getInstance()->receivedAlert(m_strIp, m_strName);
+    MainWindow::getInstance()->receivedAlert(m_strIp, m_strDepart, m_strName);
 
     if(m_bSendBack) {
         QTimer::singleShot(500, [](){

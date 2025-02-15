@@ -130,6 +130,7 @@ void MainWindow::initSocket()
     QSettings settings(APP_REG_COMPANY, APP_REG_NAME);
     QString strIp = settings.value(REG_KEY_IPADDRESS).toString();
     QString strName = settings.value(REG_KEY_USERNAME).toString();
+    QString strDepart = settings.value(REG_KEY_DEPART).toString();
 
     m_pSocket = new QTcpSocket(this);
     connect(m_pSocket, SIGNAL(readyRead()), this, SLOT(slt_readyRead()));
@@ -154,12 +155,13 @@ void MainWindow::initSocket()
         out << nHeader;
         out << strIp;
         out << strName;
+        out << strDepart;
 
         m_pSocket->write(block);
     }
 }
 
-void MainWindow::receivedAlert(QString strIp, QString strName)
+void MainWindow::receivedAlert(QString strIp, QString strDepart, QString strName)
 {
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
@@ -170,6 +172,7 @@ void MainWindow::receivedAlert(QString strIp, QString strName)
     out << nHeader;
     out << strIp;
     out << strName;
+    out << strDepart;
 
     m_pSocket->write(block);
 }
@@ -195,17 +198,18 @@ void MainWindow::slt_readyRead()
     int nHeader;
     QString strIp;
     QString strName;
+    QString strDepart;
 
-    in >> nHeader;    
+    in >> nHeader;
     in >> strIp;
     in >> strName;
+    in >> strDepart;
 
     in.commitTransaction();
 
     if(nHeader == RequestHeader::RH_SEND_ALERT)
     {
-
-        DlgAlert *pDialog = new DlgAlert(strIp, strName, this);
+        DlgAlert *pDialog = new DlgAlert(strIp, strDepart, strName, this);
         pDialog->showFullScreen();
     }
 
@@ -214,7 +218,7 @@ void MainWindow::slt_readyRead()
         if(m_bStatus) {
             QMessageBox *msgBox = new QMessageBox();
             msgBox->setWindowTitle(APP_NAME);
-            msgBox->setText(tr("Received: %1(%2)").arg(strName).arg(strIp));
+            msgBox->setText(tr("Received: %1/%2(%3)").arg(strDepart).arg(strName).arg(strIp));
             msgBox->setStandardButtons(QMessageBox::Ok);
             msgBox->setWindowFlags(msgBox->windowFlags() | Qt::WindowStaysOnTopHint);
             msgBox->setModal(false);
@@ -230,6 +234,7 @@ void MainWindow::on_lblLogo_clicked()
     QSettings settings(APP_REG_COMPANY, APP_REG_NAME);
     QString strIp = settings.value(REG_KEY_IPADDRESS).toString();
     QString strName = settings.value(REG_KEY_USERNAME).toString();
+    QString strDepart = settings.value(REG_KEY_DEPART).toString();
 
     ui->centralwidget->setStyleSheet("QLabel#lblLogo { border-image: url(:/Resource/assets/logo-red.png); }");
 
@@ -242,6 +247,7 @@ void MainWindow::on_lblLogo_clicked()
     out << nReqHeader;
     out << strIp;
     out << strName;
+    out << strDepart;
 
     m_pSocket->write(block);
 

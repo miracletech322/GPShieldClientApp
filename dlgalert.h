@@ -16,7 +16,7 @@ class DlgAlert : public QDialog
     Q_OBJECT
 
 public:
-    explicit DlgAlert(QString strIp, QString strName, QWidget *parent = nullptr);
+    explicit DlgAlert(QString strIp, QString strDepart, QString strName, QWidget *parent = nullptr);
     ~DlgAlert();
 
 public slots:
@@ -32,6 +32,7 @@ private:
     QSoundEffect *sound;
     QString m_strIp;
     QString m_strName;
+    QString m_strDepart;
     bool m_bSendBack;
 };
 

@@ -10,6 +10,7 @@
 
 #define REG_KEY_USERNAME "Username"
 #define REG_KEY_IPADDRESS "IpAddress"
+#define REG_KEY_DEPART "Department"
 
 enum RequestHeader {
     RH_SET_NAME = 0,
