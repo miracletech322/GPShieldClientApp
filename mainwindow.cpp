@@ -87,8 +87,8 @@ void MainWindow::slt_socketError(QAbstractSocket::SocketError socketError)
 
 void MainWindow::slt_disconnected()
 {
-    QMessageBox::critical(this, APP_NAME, tr("Disconnected from server"));
-    exit(EXIT_SUCCESS);
+    QMessageBox::critical(this, APP_NAME, tr("Unable to connect to server."));
+//    exit(EXIT_SUCCESS);
 }
 
 void MainWindow::moveToBottomRight()
@@ -127,24 +127,27 @@ QString MainWindow::getIpAddress()
 
 void MainWindow::initSocket()
 {
-    QSettings settings(APP_REG_COMPANY, APP_REG_NAME);
-    QString strIp = settings.value(REG_KEY_IPADDRESS).toString();
-    QString strName = settings.value(REG_KEY_USERNAME).toString();
-    QString strDepart = settings.value(REG_KEY_DEPART).toString();
+    QSettings settings("config.ini", QSettings::IniFormat);
+    QString strKey = getUsername();
+
+    QString strIp = settings.value(strKey + "/Server").toString();
+    QString strName = settings.value(strKey + "/Name").toString();
+    QString strDepart = settings.value(strKey + "/Depart").toString();
 
     m_pSocket = new QTcpSocket(this);
     connect(m_pSocket, SIGNAL(readyRead()), this, SLOT(slt_readyRead()));
     connect(m_pSocket, SIGNAL(errorOccurred(QAbstractSocket::SocketError)), this, SLOT(slt_socketError(QAbstractSocket::SocketError)));
-    connect(m_pSocket, SIGNAL(disconnected()), this, SLOT(slt_disconnected()));
+//    connect(m_pSocket, SIGNAL(disconnected()), this, SLOT(slt_disconnected()));
 
     m_pSocket->connectToHost(strIp, 3022);
 
     if (!m_pSocket->waitForConnected(5000)) {
-        QMessageBox::critical(this, APP_NAME, "Unable to connect to the server.");
+//        slt_disconnected();
+//        QMessageBox::critical(this, APP_NAME, "Unable to connect to the server.");
 
-        QTimer::singleShot(1000, [](){
-            exit(EXIT_SUCCESS);
-        });
+        // QTimer::singleShot(1000, [](){
+        //     exit(EXIT_SUCCESS);
+        // });
     } else {
         QByteArray block;
         QDataStream out(&block, QIODevice::WriteOnly);
@@ -231,10 +234,13 @@ void MainWindow::slt_readyRead()
 
 void MainWindow::on_lblLogo_clicked()
 {
-    QSettings settings(APP_REG_COMPANY, APP_REG_NAME);
-    QString strIp = settings.value(REG_KEY_IPADDRESS).toString();
-    QString strName = settings.value(REG_KEY_USERNAME).toString();
-    QString strDepart = settings.value(REG_KEY_DEPART).toString();
+    QSettings settings("config.ini", QSettings::IniFormat);
+    QString strKey = getUsername();
+
+    QString strIp = settings.value(strKey + "/Server").toString();
+    QString strName = settings.value(strKey + "/Name").toString();
+    QString strDepart = settings.value(strKey + "/Depart").toString();
+
 
     ui->centralwidget->setStyleSheet("QLabel#lblLogo { border-image: url(:/Resource/assets/logo-red.png); }");
 

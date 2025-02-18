@@ -15,6 +15,8 @@ public:
     explicit DlgSettings(QWidget *parent = nullptr);
     ~DlgSettings();
 
+    QString getUsername();
+
 public slots:
     void on_btnSave_clicked();
     void on_btnClose_clicked();

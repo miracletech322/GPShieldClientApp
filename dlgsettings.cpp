@@ -13,11 +13,12 @@ DlgSettings::DlgSettings(QWidget *parent)
 {
     ui->setupUi(this);
 
-    QSettings settings(APP_REG_COMPANY, APP_REG_NAME);
+    QSettings settings("config.ini", QSettings::IniFormat);
 
-    QString strIp = settings.value(REG_KEY_IPADDRESS).toString();
-    QString strName = settings.value(REG_KEY_USERNAME).toString();
-    QString strDepart = settings.value(REG_KEY_DEPART).toString();
+    QString strKey = getUsername();
+    QString strIp = settings.value(strKey + "/Server").toString();
+    QString strName = settings.value(strKey + "/Name").toString();
+    QString strDepart = settings.value(strKey + "/Depart").toString();
 
     if(strIp == "") {
         QList<QNetworkInterface> interfaces = QNetworkInterface::allInterfaces();
@@ -32,26 +33,28 @@ DlgSettings::DlgSettings(QWidget *parent)
                 }
             }
         }
-        settings.setValue(REG_KEY_IPADDRESS, strIp);
     }
 
     if(strName == "") {
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
         strName = env.value("USERNAME", "Unknown User");
-        settings.setValue(REG_KEY_USERNAME, strName);
-    }
-
-    if(strDepart == "") {
-        ui->edtDepart->setText(strDepart);
     }
 
     ui->edtServerIp->setText(strIp);
     ui->edtUser->setText(strName);
+    ui->edtDepart->setText(strDepart);
 }
 
 DlgSettings::~DlgSettings()
 {
     delete ui;
+}
+
+QString DlgSettings::getUsername()
+{
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    QString username = env.value("USERNAME", "Unknown User");
+    return username;
 }
 
 void DlgSettings::on_btnSave_clicked()
@@ -74,10 +77,12 @@ void DlgSettings::on_btnSave_clicked()
         return;
     }
 
-    QSettings settings(APP_REG_COMPANY, APP_REG_NAME);
-    settings.setValue(REG_KEY_IPADDRESS, strIp);
-    settings.setValue(REG_KEY_USERNAME, strName);
-    settings.setValue(REG_KEY_DEPART, strDepart);
+    QSettings settings("config.ini", QSettings::IniFormat);
+    QString strKey = getUsername();
+
+    settings.setValue(strKey + "/Server", strIp);
+    settings.setValue(strKey + "/Name", strName);
+    settings.setValue(strKey + "/Depart", strDepart);
     accept();
 }
 

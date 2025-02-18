@@ -4,13 +4,21 @@
 
 #include <QApplication>
 #include <QSettings>
+#include <QProcessEnvironment>
+
+QString getUsername()
+{
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    QString username = env.value("USERNAME", "Unknown User");
+    return username;
+}
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    QSettings settings(APP_REG_COMPANY, APP_REG_NAME);
-    QString strIp = settings.value(REG_KEY_IPADDRESS).toString();
+    QSettings settings("config.ini", QSettings::IniFormat);
+    QString strIp = settings.value(getUsername() + "/Server").toString();
 
     if(strIp == "")
     {
