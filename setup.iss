@@ -41,6 +41,12 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 ; Startup Shortcut
 Name: "{commonstartup}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\app.ico"; IconIndex: 0
 
-[Registry]
-; Delete the registry key during installation
-Root: HKCU; Subkey: "Software\MiracleTech"; Flags: deletekey
+[Code]
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssPostInstall then
+  begin
+    if FileExists('C:\Windows\Temp\config.ini') then
+      DeleteFile('C:\Windows\Temp\config.ini');
+  end;
+end;

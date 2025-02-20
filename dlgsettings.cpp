@@ -6,6 +6,7 @@
 #include "global_vars.h"
 #include <QNetworkInterface>
 #include <QProcessEnvironment>
+#include <QStandardPaths>
 
 DlgSettings::DlgSettings(QWidget *parent)
     : QDialog(parent)
@@ -13,7 +14,8 @@ DlgSettings::DlgSettings(QWidget *parent)
 {
     ui->setupUi(this);
 
-    QSettings settings("config.ini", QSettings::IniFormat);
+    QString iniPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/config.ini";
+    QSettings settings(iniPath, QSettings::IniFormat);
 
     QString strKey = getUsername();
     QString strIp = settings.value(strKey + "/Server").toString();
@@ -77,7 +79,8 @@ void DlgSettings::on_btnSave_clicked()
         return;
     }
 
-    QSettings settings("config.ini", QSettings::IniFormat);
+    QString iniPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/config.ini";
+    QSettings settings(iniPath, QSettings::IniFormat);
     QString strKey = getUsername();
 
     settings.setValue(strKey + "/Server", strIp);

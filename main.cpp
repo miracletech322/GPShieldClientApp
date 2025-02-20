@@ -5,6 +5,7 @@
 #include <QApplication>
 #include <QSettings>
 #include <QProcessEnvironment>
+#include <QStandardPaths>
 
 QString getUsername()
 {
@@ -17,7 +18,8 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    QSettings settings("config.ini", QSettings::IniFormat);
+    QString iniPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/config.ini";
+    QSettings settings(iniPath, QSettings::IniFormat);
     QString strIp = settings.value(getUsername() + "/Server").toString();
 
     if(strIp == "")

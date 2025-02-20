@@ -8,6 +8,7 @@
 #include <QNetworkInterface>
 #include "dlgalert.h"
 #include <QTimer>
+#include <QStandardPaths>
 static MainWindow* instance = nullptr;
 
 MainWindow *MainWindow::getInstance()
@@ -127,7 +128,8 @@ QString MainWindow::getIpAddress()
 
 void MainWindow::initSocket()
 {
-    QSettings settings("config.ini", QSettings::IniFormat);
+    QString iniPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/config.ini";
+    QSettings settings(iniPath, QSettings::IniFormat);
     QString strKey = getUsername();
 
     QString strIp = settings.value(strKey + "/Server").toString();
@@ -234,7 +236,8 @@ void MainWindow::slt_readyRead()
 
 void MainWindow::on_lblLogo_clicked()
 {
-    QSettings settings("config.ini", QSettings::IniFormat);
+    QString iniPath = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/config.ini";
+    QSettings settings(iniPath, QSettings::IniFormat);
     QString strKey = getUsername();
 
     QString strIp = settings.value(strKey + "/Server").toString();
